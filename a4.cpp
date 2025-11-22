@@ -375,3 +375,240 @@ int main() {
 
     return 0;
 }
+
+========================================================================================================================================================
+                                                                 ADDITIONAL  QUESTIONS
+========================================================================================================================================================
+
+1.
+Given a function n, write a function that generates and prints all binary numbers with decimal values
+from 1 to n.
+Input: n = 2
+Output: 1, 10
+https://www.geeksforgeeks.org/interesting-method-generate-binary-numbers-1-n/
+
+#include <iostream>
+#include <queue>
+#include <string>
+using namespace std;
+
+void binary(int n){
+    queue<string> q;
+    q.push("1");
+    while(n--){
+        string s1=q.front();
+        q.pop();
+        cout<<s1<<endl;
+        string s2=s1;
+        q.push(s1.append("0"));
+        q.push(s2.append("1"));
+    }
+    
+}
+int main() {
+    binary(10);
+    
+    return 0;
+}
+
+----------------------------------------------------------------------------------------------------------------------
+2) 
+Given a queue with random elements, we need to sort it. We are not allowed to use extra space. The
+operations allowed on queue are:
+1. enqueue() : Adds an item to rear of queue.
+2. dequeue() : Removes an item from front of queue.
+3. isEmpty() : Checks if a queue is empty.
+Input: 11, 5, 4, 21
+Output: 4, 5, 11, 21
+https://www.geeksforgeeks.org/sorting-queue-without-extra-space/
+
+
+#include <iostream>
+#include <queue>
+#include <climits>
+using namespace std;
+
+int findmin(queue<int>& q, int upto) {
+    int s = q.size();
+    int minVal = INT_MAX;
+
+    for (int i = 0; i < s; i++) {
+        int t = q.front();
+        q.pop();
+
+        if (i < upto && t < minVal) {
+            minVal = t;
+        }
+        q.push(t);
+    }
+    return minVal;
+}
+
+void moveMinToRear(queue<int>& q, int minVal) {
+    int s = q.size();
+    bool removed = false;
+
+    for (int i = 0; i < s; i++) {
+        int t = q.front();
+        q.pop();
+
+        if (t == minVal && !removed) {
+            removed = true; // remove only first occurrence
+            continue;
+        }
+        q.push(t);
+    }
+    q.push(minVal);
+}
+
+void sortQueue(queue<int>& q) {
+    int n = q.size();
+    for (int i = 0; i < n; i++) {
+        int minVal = findmin(q, n - i);
+        moveMinToRear(q, minVal);
+    }
+}
+
+int main() {
+    queue<int> q;
+    q.push(33);
+    q.push(2);
+    q.push(12);
+    q.push(654);
+    q.push(3);
+    q.push(4);
+
+    sortQueue(q);
+
+    cout << "Sorted Queue: ";
+    while (!q.empty()) {
+        cout << q.front() << " ";
+        q.pop();
+    }
+    return 0;
+}
+
+------------------------------------------------------------------------------------------------------------
+3) Given a Queue consisting of first n natural numbers (in random order). The task is to check whether
+the given Queue elements can be arranged in increasing order in another Queue using a stack. The
+operation allowed are:
+1. Push and pop elements from the stack
+2. Pop (Or Dequeue) from the given Queue.
+3. Push (Or Enqueue) in the another Queue.
+Input : Queue[] = { 5, 1, 2, 3, 4 }
+Output : Yes
+Check if a queue can be sorted into another queue using a stack - GeeksforGeeks
+
+
+// CPP Program to check if a queue of first 
+// n natural number can be sorted using a stack
+#include <bits/stdc++.h>
+using namespace std;
+
+// Function to check if given queue element 
+// can be sorted into another queue using a
+// stack.
+bool checkSorted(int n, queue<int>& q)
+{
+    stack<int> st;
+    int expected = 1;
+    int fnt;
+
+    // while given Queue is not empty.
+    while (!q.empty()) {
+        fnt = q.front();
+        q.pop();
+
+        // if front element is the expected element
+        if (fnt == expected)
+            expected++;
+
+        else {
+            // if stack is empty, push the element
+            if (st.empty()) {
+                st.push(fnt);
+            }
+
+            // if top element is less than element which
+            // need to be pushed, then return false.
+            else if (!st.empty() && st.top() < fnt) {
+                return false;
+            }
+
+            // else push into the stack.
+            else
+                st.push(fnt);
+        }
+
+        // while expected element are coming from
+        // stack, pop them out.
+        while (!st.empty() && st.top() == expected) {
+            st.pop();
+            expected++;
+        }
+    }
+
+    // if the final expected element value is equal
+    // to initial Queue size and the stack is empty.
+    if (expected - 1 == n && st.empty())
+        return true;
+
+    return false;
+}
+
+// Driven Program
+int main()
+{
+    queue<int> q;
+    q.push(5);
+    q.push(1);
+    q.push(2);
+    q.push(3);
+    q.push(4);
+
+    int n = q.size();
+
+    (checkSorted(n, q) ? (cout << "Yes") :
+                         (cout << "No"));
+
+    return 0;
+}
+-----------------------------------------------------------------------------------------------------------------
+4) The school cafeteria offers circular and square sandwiches at lunch break, referred to by
+numbers 0 and 1 respectively. All students stand in a queue. Each student either prefers square or
+circular sandwiches. The number of sandwiches in the cafeteria is equal to the number of students. The
+sandwiches are placed in a stack. At each step:
+• If the student at the front of the queue prefers the sandwich on the top of the stack, they will take
+it and leave the queue.
+• Otherwise, they will leave it and go to the queue's end.
+This continues until none of the queue students want to take the top sandwich and are thus
+unable to eat
+Input: students = [1,1,0,0], sandwiches = [0,1,0,1]
+Output: 0
+Number of Students Unable to Eat Lunch - LeetCode
+
+class Solution {
+public:
+    int countStudents(vector<int>& students, vector<int>& sandwiches) {
+        int count0 = 0, count1 = 0;
+
+        // count how many want 0 and how many want 1
+        for (int s : students) {
+            if (s == 0) count0++;
+            else count1++;
+        }
+
+        // go through sandwiches
+        for (int s : sandwiches) {
+            if (s == 0) {
+                if (count0 == 0) break; // no one wants 0
+                count0--;
+            } else {
+                if (count1 == 0) break; // no one wants 1
+                count1--;
+            }
+        }
+
+        return count0 + count1; // remaining students
+    }
+};
